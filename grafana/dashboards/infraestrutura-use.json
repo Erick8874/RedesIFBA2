@@ -1,0 +1,62 @@
+{
+  "uid": "cafe-use",
+  "title": "Café Planalto - Infraestrutura (USE)",
+  "tags": ["cafeplanalto", "use"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU utilizada (%)",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))", "refId": "A", "legendFormat": "CPU"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memória utilizada (%)",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)", "refId": "A", "legendFormat": "memória"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Erros de interface de rede",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m])", "refId": "A", "legendFormat": "{{device}}"}],
+      "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []},
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Uso de CPU por contêiner",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[5m]))", "refId": "A", "legendFormat": "{{name}}"}],
+      "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "multi"}}
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Sondas da filial (disponibilidade)",
+      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "probe_success", "refId": "A", "legendFormat": "{{job}} {{instance}}"}],
+      "fieldConfig": {"defaults": {"unit": "bool"}, "overrides": []},
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "multi"}}
+    }
+  ],
+  "time": {"from": "now-1h", "to": "now"}
+}

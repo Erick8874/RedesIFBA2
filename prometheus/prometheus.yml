@@ -1,0 +1,97 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    laboratorio: cafeplanalto
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["172.20.99.21:9093"]
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["172.20.99.20:9090"]
+
+  - job_name: api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["172.20.10.21:8000"]
+        labels:
+          instance: api
+    relabel_configs:
+      - target_label: component
+        replacement: loja
+
+  - job_name: postgres
+    static_configs:
+      - targets: ["172.20.10.22:9187"]
+
+  - job_name: nginx
+    static_configs:
+      - targets: ["172.20.10.20:9113"]
+
+  - job_name: node
+    static_configs:
+      - targets: ["172.20.99.25:9100"]
+        labels:
+          instance: vm-laboratorio
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["172.20.99.26:8080"]
+
+  - job_name: blackbox-http-filial
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets: ["http://172.20.10.20/"]
+        labels:
+          origem: filial
+          alvo: loja
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: __address__
+        replacement: 172.20.20.30:9115
+      - source_labels: [__param_target]
+        target_label: instance
+
+  - job_name: blackbox-dns-filial
+    metrics_path: /probe
+    params:
+      module: [dns_cafeplanalto]
+    static_configs:
+      - targets: ["loja.cafeplanalto.lab"]
+        labels:
+          origem: filial
+          alvo: dns
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: __address__
+        replacement: 172.20.20.30:9115
+      - source_labels: [__param_target]
+        target_label: instance
+
+  - job_name: blackbox-icmp-filial
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    static_configs:
+      - targets: ["10.0.0.1", "10.0.0.2"]
+        labels:
+          origem: filial
+          alvo: roteador-wan
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: __address__
+        replacement: 172.20.20.30:9115
+      - source_labels: [__param_target]
+        target_label: instance

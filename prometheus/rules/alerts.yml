@@ -1,0 +1,62 @@
+groups:
+  - name: cafeplanalto-availability
+    rules:
+      - record: cafe:http_requests_per_second:rate5m
+        expr: sum by (rota, metodo) (rate(http_requests_total[5m]))
+
+      - alert: LojaIndisponivel
+        expr: probe_success{job="blackbox-http-filial",alvo="loja"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Loja inacessível a partir da filial"
+          description: "A sonda HTTP da filial não consegue acessar a loja pela WAN."
+
+      - alert: BancoIndisponivel
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL indisponível"
+          description: "O exporter não consegue consultar o banco de dados."
+
+      - alert: TaxaDeErroElevada
+        expr: |
+          sum(rate(http_requests_total{status=~"5..",rota!="/metrics"}[5m]))
+          /
+          clamp_min(sum(rate(http_requests_total{rota!="/metrics"}[5m])), 0.001)
+          > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Taxa de erros HTTP acima de 5%"
+          description: "A taxa de respostas 5xx excedeu 5% por pelo menos dois minutos."
+
+      - alert: LatenciaP95Elevada
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(http_request_duration_seconds_bucket{rota!="/metrics"}[5m]))
+          ) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latência p95 acima do SLO de 300 ms"
+          description: "A latência p95 da API permaneceu acima da meta por cinco minutos."
+
+      - alert: ConsumoRapidoOrcamentoErro
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5..",rota!="/metrics"}[5m]))
+            /
+            clamp_min(sum(rate(http_requests_total{rota!="/metrics"}[5m])), 0.001)
+          ) / (1 - 0.995) > 14.4
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consumo rápido do orçamento de erro"
+          description: "Burn rate > 14,4 indica risco de esgotar o orçamento mensal rapidamente."

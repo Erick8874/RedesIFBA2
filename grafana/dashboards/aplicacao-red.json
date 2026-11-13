@@ -1,0 +1,79 @@
+{
+  "uid": "cafe-red",
+  "title": "Café Planalto - Aplicação (RED)",
+  "tags": ["cafeplanalto", "red"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Rate - requisições por segundo",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "cafe:http_requests_per_second:rate5m", "refId": "A", "legendFormat": "{{metodo}} {{rota}}"}],
+      "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "multi"}}
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Errors - respostas 5xx (%)",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "100 * sum(rate(http_requests_total{status=~\"5..\"}[5m])) / clamp_min(sum(rate(http_requests_total[5m])), 0.001)",
+        "refId": "A",
+        "legendFormat": "erros %",
+        "datasource": {"type": "prometheus", "uid": "prometheus"}
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "links": [{
+            "title": "Abrir logs de erro no Loki",
+            "url": "/explore?left=%7B%22datasource%22:%22loki%22,%22queries%22:[%7B%22expr%22:%22%7Bjob%3D%5C%22containers%5C%22%7D%20%7C%20json%20%7C%20status%20%3E%3D%20500%22%7D],%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
+          }]
+        },
+        "overrides": []
+      },
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Duration - latência p50/p95/p99",
+      "gridPos": {"x": 0, "y": 8, "w": 16, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))", "refId": "A", "legendFormat": "p50"},
+        {"expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))", "refId": "B", "legendFormat": "p95"},
+        {"expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))", "refId": "C", "legendFormat": "p99"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "options": {"legend": {"showLegend": true}, "tooltip": {"mode": "multi"}}
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Conexões ativas no pool PostgreSQL",
+      "gridPos": {"x": 16, "y": 8, "w": 8, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "db_pool_conexoes_em_uso", "refId": "A", "legendFormat": "conexões"}],
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"legend": {"showLegend": false}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 5,
+      "type": "logs",
+      "title": "Logs da API (erros)",
+      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "{job=\"containers\"} | json | status >= 500", "refId": "A"}],
+      "options": {"showTime": true, "showLabels": true, " sortOrder": "Descending"}
+    }
+  ],
+  "time": {"from": "now-1h", "to": "now"}
+}

@@ -1,0 +1,11 @@
+cafeplanalto.lab:53 {
+    file /etc/coredns/cafeplanalto.lab.zone
+    errors
+    log
+}
+
+.:53 {
+    forward . 1.1.1.1 8.8.8.8
+    errors
+    cache 30
+}

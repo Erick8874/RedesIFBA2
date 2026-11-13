@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title { font: 700 28px sans-serif; fill: #0f172a; }
+      .subtitle { font: 600 18px sans-serif; fill: #0f172a; }
+      .node { font: 15px sans-serif; fill: #1e293b; }
+      .small { font: 13px sans-serif; fill: #475569; }
+      .router { fill: #dbeafe; stroke: #2563eb; stroke-width: 2; rx: 12; }
+      .lan { fill: #f8fafc; stroke: #64748b; stroke-width: 2; rx: 14; }
+      .monitor { fill: #ecfccb; stroke: #65a30d; stroke-width: 1.5; rx: 8; }
+      .service { fill: #ffedd5; stroke: #ea580c; stroke-width: 1.5; rx: 8; }
+      .client { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; rx: 8; }
+      .link { fill: none; stroke: #334155; stroke-width: 2.5; marker-end: url(#arrow); }
+      .dash { fill: none; stroke: #7c3aed; stroke-width: 2; stroke-dasharray: 7 6; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1200" height="660" fill="#ffffff"/>
+  <text x="40" y="48" class="title">Café Planalto — topologia do laboratório</text>
+  <text x="40" y="76" class="small">Monitoramento da filial segue o plano de dados e atravessa a WAN</text>
+
+  <rect x="35" y="120" width="295" height="420" class="lan"/>
+  <text x="55" y="155" class="subtitle">Filial</text>
+  <text x="55" y="180" class="small">LAN 172.20.20.0/24</text>
+  <rect x="80" y="220" width="210" height="60" class="client"/>
+  <text x="98" y="246" class="node">cliente-carga · .20</text>
+  <text x="98" y="266" class="small">8 requisições/s em Python</text>
+  <rect x="80" y="320" width="210" height="60" class="client"/>
+  <text x="98" y="346" class="node">sonda Blackbox · .30</text>
+  <text x="98" y="366" class="small">HTTP, DNS e ICMP</text>
+  <rect x="105" y="440" width="160" height="65" class="router"/>
+  <text x="131" y="468" class="node">r-filial · .1</text>
+  <text x="131" y="490" class="small">WAN eth1 · 10.0.0.2</text>
+  <path d="M185 280 L185 440" class="link"/>
+  <path d="M185 380 L185 440" class="link"/>
+
+  <rect x="420" y="430" width="370" height="100" class="lan"/>
+  <text x="440" y="458" class="subtitle">WAN matriz–filial · 10.0.0.0/30</text>
+  <text x="440" y="485" class="small">r-filial 10.0.0.2 — rota estática — r-matriz 10.0.0.1</text>
+  <path d="M265 472 L420 472" class="link"/>
+
+  <rect x="840" y="120" width="325" height="420" class="lan"/>
+  <text x="860" y="155" class="subtitle">Matriz</text>
+  <rect x="885" y="190" width="230" height="65" class="router"/>
+  <text x="915" y="218" class="node">r-matriz · 172.20.10.1</text>
+  <text x="915" y="239" class="small">roteamento IPv4 e SNMP</text>
+
+  <rect x="865" y="280" width="275" height="135" class="lan"/>
+  <text x="882" y="306" class="subtitle">LAN Serviços · 172.20.10.0/24</text>
+  <rect x="885" y="324" width="105" height="35" class="service"/>
+  <text x="895" y="347" class="small">DNS · .10</text>
+  <rect x="1005" y="324" width="115" height="35" class="service"/>
+  <text x="1015" y="347" class="small">Nginx · .20</text>
+  <rect x="885" y="370" width="105" height="35" class="service"/>
+  <text x="895" y="393" class="small">FastAPI · .21</text>
+  <rect x="1005" y="370" width="115" height="35" class="service"/>
+  <text x="1015" y="393" class="small">PostgreSQL · .22</text>
+
+  <rect x="865" y="435" width="275" height="88" class="lan"/>
+  <text x="882" y="460" class="subtitle">LAN Gerência · 172.20.99.0/24</text>
+  <text x="882" y="483" class="small">Zabbix .10 · Prometheus .20 · Grafana .22</text>
+  <text x="882" y="505" class="small">Alertmanager .21 · Loki .23</text>
+
+  <path d="M790 472 L885 222" class="link"/>
+  <path d="M1000 255 L1000 280" class="link"/>
+  <path d="M1000 255 L1000 435" class="link"/>
+  <path d="M290 350 C510 350 700 230 885 222" class="dash"/>
+  <text x="460" y="320" class="small" fill="#7c3aed">sonda mede a loja pela WAN</text>
+  <text x="40" y="610" class="small">OOB 172.30.0.0/24 está conectado apenas aos roteadores; coletores usam interfaces da LAN Gerência.</text>
+</svg>

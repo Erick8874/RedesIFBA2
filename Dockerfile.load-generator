@@ -1,0 +1,5 @@
+FROM python:3.12-alpine
+RUN apk add --no-cache bind-tools busybox-extras iproute2
+COPY app/load_generator.py /app/load_generator.py
+USER 10001:10001
+CMD ["python", "-u", "/app/load_generator.py"]

@@ -1,0 +1,1 @@
+"""Café Planalto application package."""

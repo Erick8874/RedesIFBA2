@@ -1,0 +1,20 @@
+$ORIGIN cafeplanalto.lab.
+$TTL 60
+@ IN SOA dns.cafeplanalto.lab. admin.cafeplanalto.lab. (
+    2026111201 3600 900 604800 60
+)
+  IN NS dns.cafeplanalto.lab.
+dns       IN A 172.20.10.10
+loja      IN A 172.20.10.20
+web       IN A 172.20.10.20
+api       IN A 172.20.10.21
+db        IN A 172.20.10.22
+cliente-carga IN A 172.20.20.20
+sonda     IN A 172.20.20.30
+r-matriz  IN A 172.20.99.1
+r-filial  IN A 10.0.0.2
+zabbix    IN A 172.20.99.10
+prometheus IN A 172.20.99.20
+alertmanager IN A 172.20.99.21
+grafana   IN A 172.20.99.22
+loki      IN A 172.20.99.23

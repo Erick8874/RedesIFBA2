@@ -1,0 +1,23 @@
+modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      method: GET
+      preferred_ip_protocol: ip4
+      valid_status_codes: [200]
+  dns_cafeplanalto:
+    prober: dns
+    timeout: 3s
+    dns:
+      query_name: loja.cafeplanalto.lab
+      query_type: A
+      valid_rcodes: [NOERROR]
+      validate_answer_rrs:
+        fail_if_none_matches_regexp:
+          - "172\\.20\\.10\\.20"
+  icmp:
+    prober: icmp
+    timeout: 3s
+    icmp:
+      preferred_ip_protocol: ip4

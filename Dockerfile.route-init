@@ -1,0 +1,4 @@
+FROM python:3.12-alpine
+RUN apk add --no-cache iproute2
+COPY scripts/route_init.py /usr/local/bin/route-init
+ENTRYPOINT ["python", "/usr/local/bin/route-init"]
